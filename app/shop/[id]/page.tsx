@@ -3,11 +3,16 @@
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { products } from "../../data/products";
-import { cartData } from "../../data/cartData";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { addToCart } from "../../store/slices/cartSlice";
 
 export default function ProductDetailPage() {
-  const { id } = useParams(); // Lấy id từ URL
+  const { id } = useParams();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const totalItems = useAppSelector((state) =>
+    state.cart.items.reduce((sum, item) => sum + item.quantity, 0),
+  );
 
   // Tìm sản phẩm theo id
   const product = products.find((p) => p.id === Number(id));
@@ -57,9 +62,9 @@ export default function ProductDetailPage() {
             height={36}
             className="w-9 h-9 object-contain"
           />
-          {cartData.length > 0 && (
+          {totalItems > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-              {cartData.reduce((sum, item) => sum + item.quantity, 0)}
+              {totalItems}
             </span>
           )}
         </div>
@@ -142,16 +147,23 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Nút hành động */}
-          <div className="flex gap-4 mt-2">
+          <div className="flex flex-wrap gap-4 mt-2">
+            {/* Mua Ngay: thêm vào giỏ + chuyển thẳng sang Cart */}
             <button
-              onClick={() => router.push("/shop")}
-              className="px-8 py-3 bg-[#29C8E6] text-white text-base font-bold rounded-lg hover:opacity-90 transition-opacity"
+              onClick={() => {
+                dispatch(addToCart(product));
+                router.push("/shop/cart");
+              }}
+              className="px-6 py-3 bg-cyan-400 text-white text-base font-bold rounded-lg hover:bg-cyan-500 transition-colors"
             >
               Mua Ngay
             </button>
+            {/* Thêm vào giỏ hàng: thêm vào giỏ + ở lại trang */}
             <button
-              onClick={() => router.push("/shop/cart")}
-              className="px-8 py-3 bg-[#2ECC71] text-white text-base font-bold rounded-lg hover:opacity-90 transition-opacity"
+              onClick={() => {
+                dispatch(addToCart(product));
+              }}
+              className="px-6 py-3 bg-green-500 text-white text-base font-bold rounded-lg hover:bg-green-600 transition-colors"
             >
               Thêm vào giỏ hàng
             </button>

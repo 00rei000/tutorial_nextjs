@@ -1,42 +1,23 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { CartItem } from "../../types/cartItems";
-import { cartData } from "../../data/cartData";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+  increase,
+  decrease,
+  removeFromCart,
+} from "../../store/slices/cartSlice";
 
 export default function CartPage() {
-  const [items, setItems] = useState<CartItem[]>(cartData);
-
-  // Tăng số lượng
-  const increase = (id: number) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
-      ),
-    );
-  };
-
-  const decrease = (id: number) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item,
-      ),
-    );
-  };
-
-  const remove = (id: number) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
+  const dispatch = useAppDispatch();
+  const items = useAppSelector((state) => state.cart.items);
 
   const subTotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
-  const tax = subTotal * 0.1; // Giả sử thuế là 10%
-  const total = subTotal + tax; // Thuế 10%
+  const tax = subTotal * 0.1;
+  const total = subTotal + tax;
 
   return (
     <div className="p-4">
@@ -52,12 +33,12 @@ export default function CartPage() {
       <div className="flex flex-col gap-4">
         {items.map((item) => (
           <div
-            key={item.id}
+            key={item.product.id}
             className="flex gap-4 border-b border-gray-200 pb-4 relative"
           >
             {/* Nút X xóa sản phẩm */}
             <button
-              onClick={() => remove(item.id)}
+              onClick={() => dispatch(removeFromCart(item.product.id))}
               className="absolute top-0 right-0 w-5 h-5 bg-gray-200 rounded-full text-gray-600 hover:bg-red-400 hover:text-white text-xs flex items-center justify-center"
             >
               ✕
@@ -87,7 +68,7 @@ export default function CartPage() {
                 {/* Tăng giảm số lượng */}
                 <div className="flex items-center gap-3 border border-gray-300 rounded px-3 py-1">
                   <button
-                    onClick={() => increase(item.id)}
+                    onClick={() => dispatch(increase(item.product.id))}
                     className="text-lg font-bold text-gray-700 hover:text-blue-500 leading-none"
                   >
                     +
@@ -96,7 +77,7 @@ export default function CartPage() {
                     {item.quantity}
                   </span>
                   <button
-                    onClick={() => decrease(item.id)}
+                    onClick={() => dispatch(decrease(item.product.id))}
                     className="text-lg font-bold text-gray-700 hover:text-blue-500 leading-none"
                   >
                     -

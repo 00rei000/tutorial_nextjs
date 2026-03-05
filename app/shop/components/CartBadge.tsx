@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { cartData } from "../../data/cartData";
+import { useAppSelector } from "../../store/hooks";
 
 export default function CartBadge() {
   const router = useRouter();
-  const totalItems = cartData.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = useAppSelector((state) =>
+    state.cart.items.reduce((sum, item) => sum + item.quantity, 0),
+  );
 
   return (
     <div
