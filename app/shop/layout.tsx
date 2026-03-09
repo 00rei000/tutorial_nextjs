@@ -33,7 +33,7 @@ export default function ShopLayout({
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto bg-white p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-white">{children}</main>
       </div>
     </div>
   );

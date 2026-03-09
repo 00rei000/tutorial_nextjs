@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation"; // useParams để lấy id từ URL, useRouter để điều hướng
 import { products } from "../../data/products";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks"; // Dùng hook của Redux để lấy dữ liệu giỏ hàng và dispatch action
 import { addToCart } from "../../store/slices/cartSlice";
 
 export default function ProductDetailPage() {

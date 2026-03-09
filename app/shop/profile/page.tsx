@@ -2,29 +2,15 @@
 
 import Image from "next/image";
 import { useState } from "react";
-
-interface Profile {
-  name: string;
-  email: string;
-  dob: string;
-  sex: string;
-  addressCompany: string;
-  addressHome: string;
-}
-
-const initialProfile: Profile = {
-  name: "MR. USER",
-  email: "user@gmail.com",
-  dob: "01/01/2018",
-  sex: "Male",
-  addressCompany: "15, Duy Tan, Dich Vong Hau, Cau Giay, Ha Noi",
-  addressHome: "15, Duy Tan, Dich Vong Hau, Cau Giay, Ha Noi",
-};
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { updateProfile } from "../../store/slices/profileSlice";
+import type { Profile } from "../../store/slices/profileSlice";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<Profile>(initialProfile);
+  const dispatch = useAppDispatch();
+  const profile = useAppSelector((state) => state.profile.data);
   const [isEditing, setIsEditing] = useState(false);
-  const [temp, setTemp] = useState<Profile>(initialProfile);
+  const [temp, setTemp] = useState<Profile>(profile);
 
   const handleEdit = () => {
     setTemp(profile);
@@ -32,7 +18,7 @@ export default function ProfilePage() {
   };
 
   const handleSave = () => {
-    setProfile(temp);
+    dispatch(updateProfile(temp));
     setIsEditing(false);
   };
 
@@ -50,7 +36,7 @@ export default function ProfilePage() {
 
       {/* Avatar + Tên + Email */}
       <div className="flex items-center gap-8 mb-8">
-        {/* Avatar to hơn */}
+        {/* Avatar */}
         <Image
           src="/avatar.png"
           alt="Avatar"
@@ -59,11 +45,34 @@ export default function ProfilePage() {
           style={{ width: 120, height: 120 }}
           className="rounded-full border-2 border-gray-200 object-cover"
         />
-        <div className="flex flex-col gap-2">
-          <p className="text-2xl font-bold text-gray-800 tracking-wide">
-            {profile.name}
-          </p>
-          <p className="text-gray-500 text-sm">Email: {profile.email}</p>
+        <div className="flex flex-col gap-3">
+          {/* Name */}
+          {isEditing ? (
+            <input
+              type="text"
+              value={temp.name}
+              onChange={(e) => setTemp({ ...temp, name: e.target.value })}
+              className="text-2xl font-bold text-gray-800 tracking-wide border-b border-gray-400 outline-none bg-transparent pb-1 w-64"
+            />
+          ) : (
+            <p className="text-2xl font-bold text-gray-800 tracking-wide">
+              {profile.name}
+            </p>
+          )}
+          {/* Email */}
+          {isEditing ? (
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500 text-sm">Email:</span>
+              <input
+                type="email"
+                value={temp.email}
+                onChange={(e) => setTemp({ ...temp, email: e.target.value })}
+                className="border-b border-gray-400 outline-none text-sm text-gray-800 bg-transparent pb-1 flex-1"
+              />
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm">Email: {profile.email}</p>
+          )}
         </div>
       </div>
 

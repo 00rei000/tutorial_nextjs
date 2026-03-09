@@ -11,6 +11,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import cartReducer from "./slices/cartSlice";
+import profileReducer from "./slices/profileSlice";
 
 // Tránh lỗi SSR: Next.js render ở server không có localStorage
 // createNoopStorage: giả lập storage rỗng khi chạy ở server
@@ -39,9 +40,21 @@ const cartPersistConfig = {
 
 const persistedCartReducer = persistReducer(cartPersistConfig, cartReducer);
 
+const profilePersistConfig = {
+  key: "profile",
+  storage: storageEngine,
+  whitelist: ["data"],
+};
+
+const persistedProfileReducer = persistReducer(
+  profilePersistConfig,
+  profileReducer,
+);
+
 export const store = configureStore({
   reducer: {
     cart: persistedCartReducer,
+    profile: persistedProfileReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

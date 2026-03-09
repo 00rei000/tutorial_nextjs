@@ -51,13 +51,13 @@ export default function ShopHeader({ onSearch, onFilter }: ShopHeaderProps) {
 
   return (
     <div className="border-b-2 border-gray-200 pb-3 mb-4 relative">
-      {/* Dòng 1: Tiêu đề "Shop" */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">Shop</h1>
-
-      {/* Dòng 2: Breadcrumb + Search + Filter */}
+      {/* Breadcrumb + Search + Filter */}
       <div className="flex items-center justify-between">
         {/* Breadcrumb */}
-        <span className="text-gray-500 text-sm">Shop</span>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Shop</h1>
+          <span className="text-gray-500 text-sm">Shop</span>
+        </div>
 
         {/* Search + Filter */}
         <div className="flex items-center gap-2">
