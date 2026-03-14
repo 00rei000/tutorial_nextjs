@@ -82,6 +82,7 @@ describe("CartPage", () => {
       </Provider>,
     );
     fireEvent.click(screen.getByText("✕"));
+    fireEvent.click(screen.getByText("Xóa"));
     expect(screen.queryByText("Samsung Galaxy A31")).not.toBeInTheDocument();
   });
 });

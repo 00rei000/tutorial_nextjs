@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import cartReducer from "../../app/store/slices/cartSlice";
+import shopReducer from "../../app/store/slices/shopSlice";
 
 export function createMockStore(preloadedState = {}) {
   return configureStore({
-    reducer: { cart: cartReducer },
+    reducer: { cart: cartReducer, shop: shopReducer },
     preloadedState,
   });
 }

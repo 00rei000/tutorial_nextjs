@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   increase,
@@ -12,6 +13,10 @@ import { Button, Empty, Modal, message } from "antd";
 export default function CartPage() {
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.cart.items);
+  const [removeModalOpen, setRemoveModalOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(
+    null,
+  );
 
   const subTotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -21,16 +26,22 @@ export default function CartPage() {
   const total = subTotal + tax;
 
   const confirmRemove = (productId: number) => {
-    Modal.confirm({
-      title: "Xóa sản phẩm",
-      content: "Bạn chắc chắn muốn xóa sản phẩm khỏi giỏ hàng?",
-      okText: "Xóa",
-      cancelText: "Hủy",
-      onOk: () => {
-        dispatch(removeFromCart(productId));
-        message.success("Đã xóa sản phẩm");
-      },
-    });
+    setSelectedProductId(productId);
+    setRemoveModalOpen(true);
+  };
+
+  const handleRemoveConfirm = () => {
+    if (selectedProductId !== null) {
+      dispatch(removeFromCart(selectedProductId));
+      message.success("Đã xóa sản phẩm");
+    }
+    setRemoveModalOpen(false);
+    setSelectedProductId(null);
+  };
+
+  const handleRemoveCancel = () => {
+    setRemoveModalOpen(false);
+    setSelectedProductId(null);
   };
 
   const handleIncrease = (productId: number) => {
@@ -134,6 +145,19 @@ export default function CartPage() {
           </span>
         </div>
       </div>
+
+      <Modal
+        title="Xóa sản phẩm"
+        open={removeModalOpen}
+        onOk={handleRemoveConfirm}
+        onCancel={handleRemoveCancel}
+        okText="Xóa"
+        cancelText="Hủy"
+        destroyOnHidden
+        getContainer={false}
+      >
+        Bạn chắc chắn muốn xóa sản phẩm khỏi giỏ hàng?
+      </Modal>
     </div>
   );
 }
