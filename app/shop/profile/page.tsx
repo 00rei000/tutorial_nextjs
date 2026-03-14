@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { updateProfile } from "../../store/slices/profileSlice";
 import type { Profile } from "../../store/slices/profileSlice";
+import { Button, Input, Select, message } from "antd";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -20,11 +21,13 @@ export default function ProfilePage() {
   const handleSave = () => {
     dispatch(updateProfile(temp));
     setIsEditing(false);
+    message.success("Đã lưu thông tin profile");
   };
 
   const handleCancel = () => {
     setTemp(profile);
     setIsEditing(false);
+    message.info("Đã hủy chỉnh sửa");
   };
 
   return (
@@ -48,11 +51,12 @@ export default function ProfilePage() {
         <div className="flex flex-col gap-3">
           {/* Name */}
           {isEditing ? (
-            <input
-              type="text"
+            <Input
               value={temp.name}
-              onChange={(e) => setTemp({ ...temp, name: e.target.value })}
-              className="text-2xl font-bold text-gray-800 tracking-wide border-b border-gray-400 outline-none bg-transparent pb-1 w-64"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setTemp({ ...temp, name: e.target.value })
+              }
+              className="text-2xl font-bold text-gray-800 tracking-wide"
             />
           ) : (
             <p className="text-2xl font-bold text-gray-800 tracking-wide">
@@ -63,11 +67,13 @@ export default function ProfilePage() {
           {isEditing ? (
             <div className="flex items-center gap-2">
               <span className="text-gray-500 text-sm">Email:</span>
-              <input
-                type="email"
+              <Input
                 value={temp.email}
-                onChange={(e) => setTemp({ ...temp, email: e.target.value })}
-                className="border-b border-gray-400 outline-none text-sm text-gray-800 bg-transparent pb-1 flex-1"
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setTemp({ ...temp, email: e.target.value })
+                }
+                size="small"
+                className="flex-1"
               />
             </div>
           ) : (
@@ -84,11 +90,13 @@ export default function ProfilePage() {
             Date of birth:
           </span>
           {isEditing ? (
-            <input
-              type="text"
+            <Input
               value={temp.dob}
-              onChange={(e) => setTemp({ ...temp, dob: e.target.value })}
-              className="flex-1 border-b border-gray-400 outline-none text-sm text-gray-800 bg-transparent pb-1"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setTemp({ ...temp, dob: e.target.value })
+              }
+              size="small"
+              className="flex-1"
             />
           ) : (
             <div className="flex items-center gap-2 border-b border-gray-300 pb-1 flex-1">
@@ -102,14 +110,16 @@ export default function ProfilePage() {
         <div className="flex items-center gap-4">
           <span className="w-40 text-gray-600 text-sm shrink-0">Sex:</span>
           {isEditing ? (
-            <select
+            <Select
               value={temp.sex}
-              onChange={(e) => setTemp({ ...temp, sex: e.target.value })}
-              className="flex-1 border-b border-gray-400 outline-none text-sm text-gray-800 bg-transparent pb-1"
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
+              onChange={(value) => setTemp({ ...temp, sex: value })}
+              size="small"
+              className="flex-1"
+              options={[
+                { value: "Male", label: "Male" },
+                { value: "Female", label: "Female" },
+              ]}
+            />
           ) : (
             <div className="flex items-center gap-2 border-b border-gray-300 pb-1 flex-1">
               <span className="text-gray-800 text-sm">{profile.sex}</span>
@@ -124,13 +134,13 @@ export default function ProfilePage() {
             Address Company:
           </span>
           {isEditing ? (
-            <input
-              type="text"
+            <Input
               value={temp.addressCompany}
-              onChange={(e) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setTemp({ ...temp, addressCompany: e.target.value })
               }
-              className="flex-1 border-b border-gray-400 outline-none text-sm text-gray-800 bg-transparent pb-1"
+              size="small"
+              className="flex-1"
             />
           ) : (
             <span className="flex-1 border-b border-gray-300 pb-1 text-sm text-gray-800">
@@ -145,13 +155,13 @@ export default function ProfilePage() {
             Address Home:
           </span>
           {isEditing ? (
-            <input
-              type="text"
+            <Input
               value={temp.addressHome}
-              onChange={(e) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setTemp({ ...temp, addressHome: e.target.value })
               }
-              className="flex-1 border-b border-gray-400 outline-none text-sm text-gray-800 bg-transparent pb-1"
+              size="small"
+              className="flex-1"
             />
           ) : (
             <span className="flex-1 border-b border-gray-300 pb-1 text-sm text-gray-800">
@@ -164,26 +174,15 @@ export default function ProfilePage() {
         <div className="flex gap-3 mt-2">
           {isEditing ? (
             <>
-              <button
-                onClick={handleSave}
-                className="px-8 py-2 bg-cyan-400 text-white font-bold rounded-lg hover:bg-cyan-500 transition-colors"
-              >
+              <Button type="primary" onClick={handleSave}>
                 Save
-              </button>
-              <button
-                onClick={handleCancel}
-                className="px-8 py-2 bg-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-400 transition-colors"
-              >
-                Cancel
-              </button>
+              </Button>
+              <Button onClick={handleCancel}>Cancel</Button>
             </>
           ) : (
-            <button
-              onClick={handleEdit}
-              className="px-8 py-2 bg-cyan-400 text-white font-bold rounded-lg hover:bg-cyan-500 transition-colors"
-            >
+            <Button type="primary" onClick={handleEdit}>
               Edit Profile
-            </button>
+            </Button>
           )}
         </div>
       </div>

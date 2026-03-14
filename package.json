@@ -12,12 +12,16 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.0",
     "@reduxjs/toolkit": "^2.11.2",
+    "antd": "^5.29.3",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-redux": "^9.2.0",
-    "redux-persist": "^6.0.0"
+    "redux-observable": "^3.0.0-rc.3",
+    "redux-persist": "^6.0.0",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

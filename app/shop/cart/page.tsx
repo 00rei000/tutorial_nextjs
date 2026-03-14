@@ -7,6 +7,7 @@ import {
   decrease,
   removeFromCart,
 } from "../../store/slices/cartSlice";
+import { Button, Empty, Modal, message } from "antd";
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
@@ -18,6 +19,27 @@ export default function CartPage() {
   );
   const tax = subTotal * 0.1;
   const total = subTotal + tax;
+
+  const confirmRemove = (productId: number) => {
+    Modal.confirm({
+      title: "Xóa sản phẩm",
+      content: "Bạn chắc chắn muốn xóa sản phẩm khỏi giỏ hàng?",
+      okText: "Xóa",
+      cancelText: "Hủy",
+      onOk: () => {
+        dispatch(removeFromCart(productId));
+        message.success("Đã xóa sản phẩm");
+      },
+    });
+  };
+
+  const handleIncrease = (productId: number) => {
+    dispatch(increase(productId));
+  };
+
+  const handleDecrease = (productId: number) => {
+    dispatch(decrease(productId));
+  };
 
   return (
     <div className="p-4">
@@ -31,62 +53,66 @@ export default function CartPage() {
 
       {/* Danh sách sản phẩm */}
       <div className="flex flex-col gap-4">
-        {items.map((item) => (
-          <div
-            key={item.product.id}
-            className="flex gap-4 border-b border-gray-200 pb-4 relative"
-          >
-            {/* Nút X xóa sản phẩm */}
-            <button
-              onClick={() => dispatch(removeFromCart(item.product.id))}
-              className="absolute top-0 right-0 w-5 h-5 bg-gray-200 rounded-full text-gray-600 hover:bg-red-400 hover:text-white text-xs flex items-center justify-center"
+        {items.length === 0 ? (
+          <div className="py-10">
+            <Empty description="Giỏ hàng trống" />
+          </div>
+        ) : (
+          items.map((item) => (
+            <div
+              key={item.product.id}
+              className="flex gap-4 border-b border-gray-200 pb-4 relative"
             >
-              ✕
-            </button>
-            {/* Ảnh */}
-            <Image
-              src={item.product.image}
-              alt={item.product.name}
-              width={100}
-              height={100}
-              className="w-24 h-24 object-contain"
-            />
+              <Button
+                onClick={() => confirmRemove(item.product.id)}
+                size="small"
+                className="absolute top-0 right-0"
+              >
+                ✕
+              </Button>
+              <Image
+                src={item.product.image}
+                alt={item.product.name}
+                width={100}
+                height={100}
+                className="w-24 h-24 object-contain"
+              />
 
-            {/* Thông tin */}
-            <div className="flex-1">
-              <p className="font-semibold text-gray-800">{item.product.name}</p>
-              <p className="text-sm text-gray-500 mt-1">
-                {item.product.description}
-              </p>
-
-              {/* Giá + Số lượng */}
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-lg font-bold text-gray-900">
-                  {item.product.price.toLocaleString("vi-VN")} VND
+              <div className="flex-1">
+                <p className="font-semibold text-gray-800">
+                  {item.product.name}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {item.product.description}
                 </p>
 
-                {/* Tăng giảm số lượng */}
-                <div className="flex items-center gap-3 border border-gray-300 rounded px-3 py-1">
-                  <button
-                    onClick={() => dispatch(increase(item.product.id))}
-                    className="text-lg font-bold text-gray-700 hover:text-blue-500 leading-none"
-                  >
-                    +
-                  </button>
-                  <span className="text-gray-800 w-4 text-center leading-none">
-                    {item.quantity}
-                  </span>
-                  <button
-                    onClick={() => dispatch(decrease(item.product.id))}
-                    className="text-lg font-bold text-gray-700 hover:text-blue-500 leading-none"
-                  >
-                    -
-                  </button>
+                <div className="flex items-center justify-between mt-2">
+                  <p className="text-lg font-bold text-gray-900">
+                    {item.product.price.toLocaleString("vi-VN")} VND
+                  </p>
+
+                  <div className="flex items-center gap-2 border border-gray-300 rounded px-2 py-1">
+                    <Button
+                      size="small"
+                      onClick={() => handleIncrease(item.product.id)}
+                    >
+                      +
+                    </Button>
+                    <span className="text-gray-800 w-4 text-center leading-none">
+                      {item.quantity}
+                    </span>
+                    <Button
+                      size="small"
+                      onClick={() => handleDecrease(item.product.id)}
+                    >
+                      -
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Tổng tiền */}

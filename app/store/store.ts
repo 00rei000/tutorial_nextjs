@@ -1,4 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { createEpicMiddleware } from "redux-observable";
+import type { AnyAction } from "@reduxjs/toolkit";
 import {
   persistStore,
   persistReducer,
@@ -12,6 +14,8 @@ import {
 import storage from "redux-persist/lib/storage";
 import cartReducer from "./slices/cartSlice";
 import profileReducer from "./slices/profileSlice";
+import shopReducer from "./slices/shopSlice";
+import rootEpic from "./epics";
 
 // Tránh lỗi SSR: Next.js render ở server không có localStorage
 // createNoopStorage: giả lập storage rỗng khi chạy ở server
@@ -51,18 +55,23 @@ const persistedProfileReducer = persistReducer(
   profileReducer,
 );
 
+const epicMiddleware = createEpicMiddleware<AnyAction, AnyAction, void>();
+
 export const store = configureStore({
   reducer: {
     cart: persistedCartReducer,
     profile: persistedProfileReducer,
+    shop: shopReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }),
+    }).concat(epicMiddleware),
 });
+
+epicMiddleware.run(rootEpic);
 
 export const persistor = persistStore(store);
 
