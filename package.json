@@ -12,8 +12,9 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.0",
     "@reduxjs/toolkit": "^2.11.2",
-    "ant": "^0.0.0",
+    "antd": "^5.29.3",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { updateProfile } from "../../store/slices/profileSlice";
 import type { Profile } from "../../store/slices/profileSlice";
@@ -53,7 +53,9 @@ export default function ProfilePage() {
           {isEditing ? (
             <Input
               value={temp.name}
-              onChange={(e) => setTemp({ ...temp, name: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setTemp({ ...temp, name: e.target.value })
+              }
               className="text-2xl font-bold text-gray-800 tracking-wide"
             />
           ) : (
@@ -67,7 +69,9 @@ export default function ProfilePage() {
               <span className="text-gray-500 text-sm">Email:</span>
               <Input
                 value={temp.email}
-                onChange={(e) => setTemp({ ...temp, email: e.target.value })}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setTemp({ ...temp, email: e.target.value })
+                }
                 size="small"
                 className="flex-1"
               />
@@ -88,7 +92,9 @@ export default function ProfilePage() {
           {isEditing ? (
             <Input
               value={temp.dob}
-              onChange={(e) => setTemp({ ...temp, dob: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setTemp({ ...temp, dob: e.target.value })
+              }
               size="small"
               className="flex-1"
             />
@@ -130,7 +136,7 @@ export default function ProfilePage() {
           {isEditing ? (
             <Input
               value={temp.addressCompany}
-              onChange={(e) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setTemp({ ...temp, addressCompany: e.target.value })
               }
               size="small"
@@ -151,7 +157,7 @@ export default function ProfilePage() {
           {isEditing ? (
             <Input
               value={temp.addressHome}
-              onChange={(e) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setTemp({ ...temp, addressHome: e.target.value })
               }
               size="small"

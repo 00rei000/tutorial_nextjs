@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Button, Input, Modal, Select } from "antd";
 
 interface FilterValues {
@@ -64,7 +64,9 @@ export default function ShopHeader({ onSearch, onFilter }: ShopHeaderProps) {
         <div className="flex items-center gap-2">
           <Input
             value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleSearchChange(e.target.value)
+            }
             placeholder="Search..."
             size="middle"
             className="w-56"

@@ -52,7 +52,7 @@ export default function ShopPage() {
 
       {/* Danh sách sản phẩm */}
       <div className="flex-1 px-6 pt-4 pb-6">
-        <Spin spinning={loading} description="Đang tải sản phẩm...">
+        <Spin spinning={loading} tip="Đang tải sản phẩm...">
           {error && !loading && (
             <div className="text-center text-sm text-red-500 py-8">{error}</div>
           )}
@@ -77,7 +77,7 @@ export default function ShopPage() {
                     current={currentPage}
                     total={filteredProducts.length}
                     pageSize={PAGE_SIZE}
-                    onChange={(page) => dispatch(setPage(page))}
+                    onChange={(page: number) => dispatch(setPage(page))}
                     size="small"
                   />
                 </div>
