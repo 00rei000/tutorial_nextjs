@@ -11,15 +11,24 @@ export interface FilterValues {
 
 interface ShopState {
   products: Product[];
+  total: number;
   search: string;
   filter: FilterValues;
   currentPage: number;
+  pageSize: number;
   loading: boolean;
   error: string | null;
+  /*
+  ✅ Redux Observable pattern:
+  1. UI dispatch(fetchProducts) 
+  2. Epic → rxApiClient.getProducts$()
+  3. Backend → dispatch(fetchProductsSuccess)
+  */
 }
 
 const initialState: ShopState = {
   products: [],
+  total: 0,
   search: "",
   filter: {
     priceFrom: 0,
@@ -28,6 +37,7 @@ const initialState: ShopState = {
     ratingTo: 5,
   },
   currentPage: 1,
+  pageSize: 10,
   loading: false,
   error: null,
 };
@@ -40,8 +50,19 @@ const shopSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchProductsSuccess: (state, action: PayloadAction<Product[]>) => {
-      state.products = action.payload;
+    fetchProductsSuccess: (
+      state,
+      action: PayloadAction<{
+        items: Product[];
+        total: number;
+        page: number;
+        page_size: number;
+      }>,
+    ) => {
+      state.products = action.payload.items;
+      state.total = action.payload.total;
+      state.currentPage = action.payload.page;
+      state.pageSize = action.payload.page_size;
       state.loading = false;
     },
     fetchProductsError: (state, action: PayloadAction<string>) => {
@@ -81,17 +102,16 @@ export const selectShopState = (state: RootState) => state.shop;
 
 export const selectFilteredProducts = createSelector(
   [selectShopState],
-  (shop) => {
-    const { products, search, filter } = shop;
-    return products.filter((p) => {
-      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
-      const matchPrice =
-        p.price >= filter.priceFrom && p.price <= filter.priceTo;
-      const matchRating =
-        p.rating >= filter.ratingFrom && p.rating <= filter.ratingTo;
-      return matchSearch && matchPrice && matchRating;
-    });
-  },
+  (shop) => shop.products,
+);
+
+export const selectShopTotal = createSelector(
+  [selectShopState],
+  (shop) => shop.total,
+);
+export const selectShopPageSize = createSelector(
+  [selectShopState],
+  (shop) => shop.pageSize,
 );
 
 export default shopSlice.reducer;

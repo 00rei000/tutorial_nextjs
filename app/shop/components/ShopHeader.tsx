@@ -51,7 +51,7 @@ export default function ShopHeader({ onSearch, onFilter }: ShopHeaderProps) {
   };
 
   return (
-    <div className="border-b-2 border-gray-200 pb-3 mb-4 relative">
+    <div className="mb-4 relative">
       {/* Breadcrumb + Search + Filter */}
       <div className="flex items-center justify-between">
         {/* Breadcrumb */}
@@ -95,6 +95,7 @@ export default function ShopHeader({ onSearch, onFilter }: ShopHeaderProps) {
           </Button>
         </div>
       </div>
+     
       <Modal
         title="Filter"
         open={showFilter}

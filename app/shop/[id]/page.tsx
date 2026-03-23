@@ -1,24 +1,34 @@
 "use client";
 
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation"; // useParams để lấy id từ URL, useRouter để điều hướng
-import { products } from "../../data/products";
-import { useAppDispatch, useAppSelector } from "../../store/hooks"; // Dùng hook của Redux để lấy dữ liệu giỏ hàng và dispatch action
+import { useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { addToCart } from "../../store/slices/cartSlice";
+import {
+  fetchProductDetail,
+  selectProductDetail,
+  selectProductDetailLoading,
+} from "../../store/slices/productDetailSlice";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const product = useAppSelector(selectProductDetail);
+  const loading = useAppSelector(selectProductDetailLoading);
+  const error = useAppSelector((state) => state.productDetail.error);
   const totalItems = useAppSelector((state) =>
     state.cart.items.reduce((sum, item) => sum + item.quantity, 0),
   );
+  const productId = Number(id);
 
-  // Tìm sản phẩm theo id
-  const product = products.find((p) => p.id === Number(id));
+  useEffect(() => {
+    if (!productId) return;
+    dispatch(fetchProductDetail(productId));
+  }, [dispatch, productId]);
 
-  // Nếu không tìm thấy sản phẩm
-  if (!product) {
+  if (!productId) {
     return (
       <div className="p-4">
         <p className="text-gray-500">Không tìm thấy sản phẩm!</p>
@@ -32,9 +42,26 @@ export default function ProductDetailPage() {
     );
   }
 
+  if (loading) {
+    return <div className="p-4 text-gray-500">Đang tải sản phẩm...</div>;
+  }
+
+  if (error || !product) {
+    return (
+      <div className="p-4">
+        <p className="text-gray-500">{error ?? "Không tìm thấy sản phẩm!"}</p>
+        <button
+          onClick={() => router.push("/shop")}
+          className="mt-4 px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500"
+        >
+          Quay lại Shop
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 relative">
-      {/* Header + Breadcrumb + Cart badge góc phải */}
       <div className="border-b-2 border-gray-200 pb-3 mb-6 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Shop</h1>
@@ -50,7 +77,6 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Cart badge góc trên phải */}
         <div
           className="relative cursor-pointer"
           onClick={() => router.push("/shop/cart")}
@@ -70,11 +96,8 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Nội dung */}
       <div className="flex gap-8 items-start">
-        {/* Cột trái: Ảnh */}
         <div className="flex flex-col gap-2 shrink-0">
-          {/* Ảnh lớn */}
           <div className="w-48 h-48 border border-gray-200 rounded-lg p-2 flex items-center justify-center">
             <Image
               src={product.image}
@@ -90,7 +113,6 @@ export default function ProductDetailPage() {
               className="object-contain"
             />
           </div>
-          {/* Ảnh nhỏ bên dưới */}
           <div className="flex gap-2">
             {[1, 2, 3].map((i) => (
               <div
@@ -115,22 +137,17 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Cột phải: Thông tin */}
         <div className="flex-1 min-w-0 flex flex-col gap-3">
-          {/* Tên */}
           <h2 className="text-lg font-semibold text-gray-800">
             {product.name}
           </h2>
 
-          {/* Mô tả */}
           <p className="text-sm text-gray-500">{product.description}</p>
 
-          {/* Giá */}
           <p className="text-2xl font-bold text-gray-900">
             {product.price.toLocaleString("vi-VN")} VND
           </p>
 
-          {/* Rating */}
           <div className="flex gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <span
@@ -146,9 +163,7 @@ export default function ProductDetailPage() {
             ))}
           </div>
 
-          {/* Nút hành động */}
           <div className="flex flex-wrap gap-4 mt-2">
-            {/* Mua Ngay: thêm vào giỏ + chuyển thẳng sang Cart */}
             <button
               onClick={() => {
                 dispatch(addToCart(product));
@@ -158,7 +173,6 @@ export default function ProductDetailPage() {
             >
               Mua Ngay
             </button>
-            {/* Thêm vào giỏ hàng: thêm vào giỏ + ở lại trang */}
             <button
               onClick={() => {
                 dispatch(addToCart(product));

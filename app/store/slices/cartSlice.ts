@@ -5,11 +5,13 @@ interface CartItem {
   product: Product;
   quantity: number;
 }
-       
+
 interface CartState {
   items: CartItem[];
 }
 
+import { createSelector } from "@reduxjs/toolkit";
+import type { RootState } from "../store";
 const initialState: CartState = {
   items: [],
 };
@@ -48,6 +50,23 @@ const cartSlice = createSlice({
   },
 });
 
+// Selectors for subtotal, tax, total
+export const selectCartItems = (state: RootState) => state.cart.items;
+
+export const selectCartSubTotal = createSelector(selectCartItems, (items) =>
+  items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+);
+
+export const selectCartTax = createSelector(
+  selectCartSubTotal,
+  (subTotal) => subTotal * 0.1,
+);
+
+export const selectCartTotal = createSelector(
+  selectCartSubTotal,
+  selectCartTax,
+  (subTotal, tax) => subTotal + tax,
+);
 export const { addToCart, removeFromCart, increase, decrease } =
   cartSlice.actions;
 export default cartSlice.reducer;

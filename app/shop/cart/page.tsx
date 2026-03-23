@@ -7,23 +7,23 @@ import {
   increase,
   decrease,
   removeFromCart,
+  selectCartItems,
+  selectCartSubTotal,
+  selectCartTax,
+  selectCartTotal,
 } from "../../store/slices/cartSlice";
 import { Button, Empty, Modal, message } from "antd";
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
-  const items = useAppSelector((state) => state.cart.items);
+  const items = useAppSelector(selectCartItems);
+  const subTotal = useAppSelector(selectCartSubTotal);
+  const tax = useAppSelector(selectCartTax);
+  const total = useAppSelector(selectCartTotal);
   const [removeModalOpen, setRemoveModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(
     null,
   );
-
-  const subTotal = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0,
-  );
-  const tax = subTotal * 0.1;
-  const total = subTotal + tax;
 
   const confirmRemove = (productId: number) => {
     setSelectedProductId(productId);
