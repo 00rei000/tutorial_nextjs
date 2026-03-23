@@ -5,13 +5,17 @@ import { useState, type ChangeEvent } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { updateProfile } from "../../store/slices/profileSlice";
 import type { Profile } from "../../store/slices/profileSlice";
-import { Button, Input, Select, message } from "antd";
+import { Button, Input, Select, Modal } from "antd";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile.data);
   const [isEditing, setIsEditing] = useState(false);
   const [temp, setTemp] = useState<Profile>(profile);
+  const [modal, setModal] = useState<{ open: boolean; content: string }>({
+    open: false,
+    content: "",
+  });
 
   const handleEdit = () => {
     setTemp(profile);
@@ -21,13 +25,13 @@ export default function ProfilePage() {
   const handleSave = () => {
     dispatch(updateProfile(temp));
     setIsEditing(false);
-    message.success("Đã lưu thông tin profile");
+    setModal({ open: true, content: "Đã lưu thông tin profile" });
   };
 
   const handleCancel = () => {
     setTemp(profile);
     setIsEditing(false);
-    message.info("Đã hủy chỉnh sửa");
+    setModal({ open: true, content: "Đã hủy chỉnh sửa" });
   };
 
   return (
@@ -185,6 +189,15 @@ export default function ProfilePage() {
             </Button>
           )}
         </div>
+        <Modal
+          open={modal.open}
+          onOk={() => setModal({ ...modal, open: false })}
+          onCancel={() => setModal({ ...modal, open: false })}
+          footer={null}
+          centered
+        >
+          <div className="text-center py-4">{modal.content}</div>
+        </Modal>
       </div>
     </div>
   );

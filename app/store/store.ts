@@ -15,10 +15,13 @@ import storage from "redux-persist/lib/storage";
 import cartReducer from "./slices/cartSlice";
 import profileReducer from "./slices/profileSlice";
 import shopReducer from "./slices/shopSlice";
+import productDetailReducer from "./slices/productDetailSlice";
 import rootEpic from "./epics";
 
-// Tránh lỗi SSR: Next.js render ở server không có localStorage
-// createNoopStorage: giả lập storage rỗng khi chạy ở server
+/**
+ * SSR Support: Kiểm tra nếu chạy trên client (có window)
+ * Nếu server (không có window), dùng noop storage để tránh lỗi
+ */
 function createNoopStorage() {
   return {
     getItem() {
@@ -36,6 +39,10 @@ function createNoopStorage() {
 const storageEngine =
   typeof window !== "undefined" ? storage : createNoopStorage();
 
+/**
+ * Cart Persist Config
+ * Persist: items (giỏ hàng được lưu khi reload)
+ */
 const cartPersistConfig = {
   key: "cart",
   storage: storageEngine,
@@ -44,6 +51,10 @@ const cartPersistConfig = {
 
 const persistedCartReducer = persistReducer(cartPersistConfig, cartReducer);
 
+/**
+ * Profile Persist Config
+ * Persist: data (thông tin người dùng được lưu)
+ */
 const profilePersistConfig = {
   key: "profile",
   storage: storageEngine,
@@ -55,14 +66,28 @@ const persistedProfileReducer = persistReducer(
   profileReducer,
 );
 
-const epicMiddleware = createEpicMiddleware<AnyAction, AnyAction, void>();
+const rootReducer = {
+  cart: persistedCartReducer,
+  profile: persistedProfileReducer,
+  shop: shopReducer,
+  productDetail: productDetailReducer,
+};
+
+/**
+ * RootState Type - Định nghĩa kiểu của state toàn bộ store
+ * Dùng cho Epic middleware và useAppSelector
+ */
+export type RootState = {
+  cart: ReturnType<typeof persistedCartReducer>;
+  profile: ReturnType<typeof persistedProfileReducer>;
+  shop: ReturnType<typeof shopReducer>;
+  productDetail: ReturnType<typeof productDetailReducer>;
+};
+
+const epicMiddleware = createEpicMiddleware<AnyAction, AnyAction, RootState>();
 
 export const store = configureStore({
-  reducer: {
-    cart: persistedCartReducer,
-    profile: persistedProfileReducer,
-    shop: shopReducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -71,9 +96,11 @@ export const store = configureStore({
     }).concat(epicMiddleware),
 });
 
+// Run root epic
 epicMiddleware.run(rootEpic);
 
+// Create persistor for redux-persist integration
 export const persistor = persistStore(store);
 
-export type RootState = ReturnType<typeof store.getState>;
+// Export AppDispatch type
 export type AppDispatch = typeof store.dispatch;

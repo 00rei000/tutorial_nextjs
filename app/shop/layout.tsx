@@ -9,7 +9,7 @@ export default function ShopLayout({
 }) {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <header className="flex h-16 items-center justify-between border-b-2 border-black bg-[#CBE8F9] px-6">
+      <header className="flex h-16 items-center justify-between bg-[#CBE8F9] px-6">
         <div className="flex items-center gap-3">
           <Image
             src="/logo.png"
