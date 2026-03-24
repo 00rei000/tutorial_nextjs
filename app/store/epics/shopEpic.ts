@@ -3,6 +3,7 @@ import { ofType } from "redux-observable";
 import {
   debounceTime,
   map,
+  mergeMap,
   catchError,
   withLatestFrom,
   switchMap,
@@ -20,6 +21,7 @@ import {
   fetchProductsError,
   setSearchInput,
   setSearch,
+  setFilter,
 } from "../slices/shopSlice";
 import { RootState } from "../store";
 import { getProducts$ } from "../../services/rxApiClient";
@@ -90,4 +92,26 @@ export const searchDebounceEpic: Epic<AnyAction, AnyAction, RootState> = (
     ofType(setSearchInput.type),
     debounceTime(300),
     map((action: AnyAction) => setSearch(action.payload as string)),
+  );
+
+/**
+ * Trigger fetch after search is applied
+ */
+export const searchFetchEpic: Epic<AnyAction, AnyAction, RootState> = (
+  action$: Observable<AnyAction>,
+) =>
+  action$.pipe(
+    ofType(setSearch.type),
+    map(() => fetchProducts()),
+  );
+
+/**
+ * Trigger fetch after filter is applied
+ */
+export const filterFetchEpic: Epic<AnyAction, AnyAction, RootState> = (
+  action$: Observable<AnyAction>,
+) =>
+  action$.pipe(
+    ofType(setFilter.type),
+    map(() => fetchProducts()),
   );
