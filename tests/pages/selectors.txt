@@ -1,0 +1,15 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('https://tutorial-nextjs-4bnk.vercel.app/login');
+  await page.getByRole('textbox', { name: 'Tên đăng nhập' }).click();
+  await page.getByRole('textbox', { name: 'Tên đăng nhập' }).fill('test');
+  await page.getByRole('textbox', { name: 'Mật khẩu' }).click();
+  await page.getByRole('textbox', { name: 'Mật khẩu' }).fill('1');
+  await page.getByRole('button', { name: 'Đăng nhập' }).click();
+  await page.getByRole('textbox', { name: 'Search...' }).click();
+  await page.getByRole('textbox', { name: 'Search...' }).fill('xiaomi');
+  await page.locator('div').filter({ hasText: /^Xiaomi Poco F48\.890\.000 VND★★★★★$/ }).first().click();
+  await page.getByRole('button', { name: 'Mua Ngay' }).click();
+  await page.getByText('Total9.339.000 VND').click();
+});
